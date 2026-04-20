@@ -111,6 +111,24 @@ android/
 
 ---
 
+## Limitaciones conocidas
+
+### Historial de portapapeles del teclado
+
+Al copiar una contraseña, KMD Volt marca el contenido como **sensible** (`EXTRA_IS_SENSITIVE`, Android 13+) y lo borra automáticamente después de 12 segundos. Sin embargo, **algunos teclados de terceros** (como el teclado predeterminado de Xiaomi/HyperOS y otros fabricantes) mantienen su **propio historial de portapapeles independiente** del sistema Android y pueden ignorar esta señal, haciendo que la contraseña siga visible en su panel de "recientes".
+
+Esto **no es un bug de KMD Volt** — es una limitación del sistema Android: no existe ninguna API pública que permita a una app borrar el historial interno de un teclado de terceros.
+
+**Soluciones recomendadas:**
+
+| Opción | Pasos |
+|---|---|
+| Desactivar historial del teclado | Teclado → ícono portapapeles → Configuración → desactivar "Historial del portapapeles" |
+| Usar Gboard | Gboard (teclado de Google) sí respeta `EXTRA_IS_SENSITIVE` y no guarda contraseñas en su historial |
+| Usar Autofill | La función de autocompletar de KMD Volt **nunca usa el portapapeles** — inyecta las credenciales directamente en el campo. Es la opción más segura. |
+
+---
+
 ## Seguridad
 
 - **Sin servidor**: todos los datos permanecen en el dispositivo
