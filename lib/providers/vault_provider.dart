@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../core/autofill_service.dart';
+import '../core/services/clipboard_service.dart';
 import '../core/database/database_service.dart';
 import '../core/models/entry_model.dart';
 import '../core/models/group_model.dart';
@@ -142,5 +143,8 @@ class VaultProvider extends ChangeNotifier {
     _searchResults = [];
     notifyListeners();
     AutofillService.lockVault();
+    // Also wipe the clipboard immediately when the vault locks — no point
+    // keeping a copied password accessible after the user locks the app.
+    ClipboardService.clearAndCancel();
   }
 }

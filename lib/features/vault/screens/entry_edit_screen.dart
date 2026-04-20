@@ -45,14 +45,10 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
   late String _groupId;
   bool _saving = false;
 
-  // ── Clipboard auto-clear ────────────────────────────────────────────────────
-  static const int _kClearSeconds = 12;
-
-  Timer? _usernameClearTimer;
+  // ── Clipboard countdown display (actual clear is managed by ClipboardService)
   Timer? _usernameCountdownTimer;
   int? _usernameCountdown;
 
-  Timer? _passwordClearTimer;
   Timer? _passwordCountdownTimer;
   int? _passwordCountdown;
 
@@ -78,26 +74,27 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
     _passwordCtrl.dispose();
     _urlCtrl.dispose();
     _notesCtrl.dispose();
-    _usernameClearTimer?.cancel();
     _usernameCountdownTimer?.cancel();
-    _passwordClearTimer?.cancel();
     _passwordCountdownTimer?.cancel();
+    // NOTE: do NOT cancel the ClipboardService timer here — it must survive
+    // widget disposal so the clipboard is cleared even after the user navigates
+    // away to paste the password in another app.
     super.dispose();
   }
 
   void _copyUsername() {
-    _usernameClearTimer?.cancel();
     _usernameCountdownTimer?.cancel();
+    // copySecure handles the actual timed clear at the service level.
     ClipboardService.copySecure(_usernameCtrl.text);
-    setState(() => _usernameCountdown = _kClearSeconds);
+    setState(() => _usernameCountdown = ClipboardService.kClearSeconds);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '👤 Usuario copiado · portapapeles se limpiará en ${_kClearSeconds}s',
+          '👤 Usuario copiado · portapapeles se limpiará en ${ClipboardService.kClearSeconds}s',
         ),
-        duration: const Duration(seconds: _kClearSeconds),
+        duration: Duration(seconds: ClipboardService.kClearSeconds),
       ),
     );
 
@@ -112,25 +109,20 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
         }
       });
     });
-
-    _usernameClearTimer = Timer(const Duration(seconds: _kClearSeconds), () {
-      ClipboardService.clear();
-    });
   }
 
   void _copyPassword() {
-    _passwordClearTimer?.cancel();
     _passwordCountdownTimer?.cancel();
     ClipboardService.copySecure(_passwordCtrl.text);
-    setState(() => _passwordCountdown = _kClearSeconds);
+    setState(() => _passwordCountdown = ClipboardService.kClearSeconds);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '🔐 Contraseña copiada · portapapeles se limpiará en ${_kClearSeconds}s',
+          '🔐 Contraseña copiada · portapapeles se limpiará en ${ClipboardService.kClearSeconds}s',
         ),
-        duration: const Duration(seconds: _kClearSeconds),
+        duration: Duration(seconds: ClipboardService.kClearSeconds),
       ),
     );
 
@@ -144,10 +136,6 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
           t.cancel();
         }
       });
-    });
-
-    _passwordClearTimer = Timer(const Duration(seconds: _kClearSeconds), () {
-      ClipboardService.clear();
     });
   }
 

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 import 'core/theme.dart';
 import 'core/autofill_service.dart';
+import 'core/services/clipboard_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/workers/password_check_worker.dart';
 import 'providers/auth_provider.dart';
@@ -113,6 +114,10 @@ class _AppRouterState extends State<AppRouter> with WidgetsBindingObserver {
         // Check for autofill save requests that arrived while the app was in
         // background (onNewIntent stores the data; we retrieve it here).
         AutofillService.checkPendingSave();
+        // Clear clipboard if the auto-clear timer fired while in background.
+        // Android 10+ blocks clipboard writes from background apps so the
+        // timed clear inside ClipboardService may have silently failed.
+        ClipboardService.clearIfOverdue();
       }
     }
   }
