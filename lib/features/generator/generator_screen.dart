@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../../core/services/clipboard_service.dart';
 import '../../core/theme.dart';
 
 class GeneratorScreen extends StatefulWidget {
@@ -94,7 +94,7 @@ class _GeneratorScreenState extends State<GeneratorScreen> {
   }
 
   void _copy() {
-    Clipboard.setData(ClipboardData(text: _generated));
+    ClipboardService.copySecure(_generated);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Contraseña copiada al portapapeles'),
@@ -344,8 +344,7 @@ class _GeneratorScreenState extends State<GeneratorScreen> {
                                 icon:
                                     const Icon(Icons.copy_outlined, size: 16),
                                 onPressed: () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: e.value));
+                                  ClipboardService.copySecure(e.value);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Copiada'),

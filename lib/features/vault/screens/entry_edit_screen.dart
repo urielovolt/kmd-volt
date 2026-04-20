@@ -88,7 +88,7 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
   void _copyUsername() {
     _usernameClearTimer?.cancel();
     _usernameCountdownTimer?.cancel();
-    Clipboard.setData(ClipboardData(text: _usernameCtrl.text));
+    ClipboardService.copySecure(_usernameCtrl.text);
     setState(() => _usernameCountdown = _kClearSeconds);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -121,7 +121,7 @@ class _EntryEditScreenState extends State<EntryEditScreen> {
   void _copyPassword() {
     _passwordClearTimer?.cancel();
     _passwordCountdownTimer?.cancel();
-    Clipboard.setData(ClipboardData(text: _passwordCtrl.text));
+    ClipboardService.copySecure(_passwordCtrl.text);
     setState(() => _passwordCountdown = _kClearSeconds);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

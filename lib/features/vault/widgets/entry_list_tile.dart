@@ -40,7 +40,7 @@ class _EntryListTileState extends State<EntryListTile> {
     _clearTimer?.cancel();
     _countdownTimer?.cancel();
 
-    Clipboard.setData(ClipboardData(text: widget.entry.password));
+    ClipboardService.copySecure(widget.entry.password);
     setState(() => _countdown = _kClearSeconds);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

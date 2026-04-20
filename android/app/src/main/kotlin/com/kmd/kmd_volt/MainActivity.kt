@@ -208,22 +208,43 @@ class MainActivity : FlutterFragmentActivity() {
         // Provides a real clearPrimaryClip() call rather than the Flutter
         // workaround of writing an empty string (which leaves a visible blank
         // entry in clipboard history managers).
+        // Also provides copySecure() which marks content as sensitive so that
+        // keyboard apps (Gboard etc.) hide it from their clipboard history.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CLIPBOARD_CHANNEL)
             .setMethodCallHandler { call, result ->
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 when (call.method) {
                     "clearClipboard" -> {
-                        val cm = getSystemService(Context.CLIPBOARD_SERVICE)
-                            as ClipboardManager
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             cm.clearPrimaryClip()
                         } else {
-                            // Fallback for API < 28: overwrite with empty text
-                            cm.setPrimaryClip(
-                                ClipData.newPlainText("", "")
-                            )
+                            cm.setPrimaryClip(ClipData.newPlainText("", ""))
                         }
                         result.success(true)
                     }
+
+                    // Copies [text] to the clipboard and marks it as sensitive.
+                    // On Android 13+ (API 33) the ClipDescription.EXTRA_IS_SENSITIVE
+                    // flag tells keyboard apps and the system clipboard UI to hide
+                    // the content from history / previews.
+                    // On older API levels a normal copy is performed (no workaround
+                    // exists for keyboard clipboard history on those versions).
+                    "copySecure" -> {
+                        val text = call.argument<String>("text") ?: ""
+                        val clip = ClipData.newPlainText("", text)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            clip.description.extras =
+                                android.os.PersistableBundle().apply {
+                                    putBoolean(
+                                        android.content.ClipDescription.EXTRA_IS_SENSITIVE,
+                                        true
+                                    )
+                                }
+                        }
+                        cm.setPrimaryClip(clip)
+                        result.success(true)
+                    }
+
                     else -> result.notImplemented()
                 }
             }
