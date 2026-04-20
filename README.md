@@ -13,7 +13,7 @@
 
 ## ¿Qué es KMD Volt?
 
-KMD Volt es un gestor de contraseñas local, seguro y de código abierto para Android. Almacena tus credenciales cifradas directamente en tu dispositivo — sin servidores externos, sin suscripciones, sin rastreo.
+KMD Volt es un gestor de contraseñas local, seguro y de código abierto para Android. Almacena tus credenciales cifradas directamente en tu dispositivo, sin servidores externos, sin suscripciones, sin rastreo.
 
 ---
 
